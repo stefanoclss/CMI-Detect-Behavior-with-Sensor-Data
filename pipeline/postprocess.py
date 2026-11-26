@@ -1,14 +1,14 @@
 """Stage 5 · Prediction Calibration & Post-Processing (`pipeline/postprocess.py`).
 
 Synthesized by sovLoop (Model: qwen3.5:9b)
-Active Operations: identity_passthrough
+Active Operations: multiclass_prior_tuner
 """
 
 from __future__ import annotations
 
 import numpy as np
 
-ACTIVE_POSTPROCESS_OPS: tuple[str, ...] = ('identity_passthrough',)
+ACTIVE_POSTPROCESS_OPS: tuple[str, ...] = ('multiclass_prior_tuner',)
 
 
 def _pav_monotonic_curve(preds: np.ndarray, y_ref: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
