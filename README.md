@@ -2,7 +2,7 @@
 
 [![Autonomous Synthesis](https://img.shields.io/badge/Synthesized%20By-sovLoop%20(Stealth)-0A66C2?style=for-the-badge)](#how-this-pipeline-was-built)
 [![Foundation LLM](https://img.shields.io/badge/Model-qwen3.5%3A9b-111827?style=for-the-badge)](#how-this-pipeline-was-built)
-[![Validation](https://img.shields.io/badge/5--Fold%20OOF-HIERARCHICAL_F1%200.79910-059669?style=for-the-badge)](#verified-validation-benchmark)
+[![Validation](https://img.shields.io/badge/5--Fold%20OOF-HIERARCHICAL_F1%200.80205-059669?style=for-the-badge)](#verified-validation-benchmark)
 [![Security](https://img.shields.io/badge/Zero--Pickle-CWE--502%20Compliant-374151?style=for-the-badge)](#governance--production-guarantees)
 [![Kaggle Public Notebook](https://img.shields.io/badge/Kaggle%20Notebook-Public%20Kernel-20BEFF?style=for-the-badge)](https://www.kaggle.com/code/stefanoclss/cmi-detect-behavior-with-sensor-data)
 [![Kaggle Challenge](https://img.shields.io/badge/Challenge-Benchmark-0284C7?style=for-the-badge)](https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data)
@@ -37,8 +37,8 @@ Production data science teams need pipelines that are not only accurate, but **r
 | **Target Variable (`y`)** | `target_binary` (`binary_classification`) |
 | **Evaluation KPI** | `HIERARCHICAL_F1` (Higher is better) |
 | **Baseline 5-Fold OOF Score** | `0.00000` |
-| **Champion 5-Fold OOF Score** | **`0.79910`** (`+0.79910` verified lift vs. baseline) |
-| **Cross-Fold Stability (Std. Dev.)** | `±0.00960` across `5` strict folds |
+| **Champion 5-Fold OOF Score** | **`0.80205`** (`+0.80205` verified lift vs. baseline) |
+| **Cross-Fold Stability (Std. Dev.)** | `±0.01399` across `5` strict folds |
 | **Synthesis LLM** | `qwen3.5:9b` (via **sovLoop**) |
 
 ---
@@ -49,7 +49,7 @@ Every individual model inside the unrestricted ensemble is benchmarked independe
 
 | Model Family (`key`) | Standalone Val Score | Mean Fold Fit | Mean Fold Inference | Ensemble Weight | Deployment Role |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Oblivious GBDT** (`sym`) | `0.98573 ± 0.01016` | `521.7 ms` | `8.00 ms` | `100.0%` | `Best Solo + Fastest SLA` |
+| **Oblivious GBDT** (`sym`) | `0.98683 ± 0.01073` | `521.7 ms` | `6.97 ms` | `100.0%` | `Best Solo + Fastest SLA` |
 
 ---
 
@@ -60,9 +60,7 @@ Every row below corresponds to a verified out-of-fold promotion recorded as an *
 | Iteration | Module Evolved | Active Synthesis Operations | 5-Fold OOF `HIERARCHICAL_F1` | Lift | Engineering Rationale |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Gen 0** | `scaffold` | Baseline initialization | `0.00000` | `baseline` | Deterministic 5-fold leak-free baseline anchor |
-| **Gen 1** | `pipeline/models.py` | `seq_cls_multiscale_se_gru` | `0.79408` | `+0.79408` | Coordinate-ascent probe on `model`: Evaluate single estimator `Multi-Scale Inception-1D + SE + BiLSTM/BiGRU Classifier (GPU)` |
-| **Gen 2** | `pipeline/postprocess.py` | `multiclass_prior_tuner` | `0.79448` | `+0.00040` | Applying multiclass_prior_tuner will recalibrate the decision boundary using fold-specific priors derived from the skewed high-value residuals... |
-| **Gen 3** | `pipeline/models.py` | `seq_cls_multiscale_se_gru`, `seq_cls_1d_cnn_bigru`, `seq_cls_imu_branch_fusion` | `0.79910` | `+0.00462` | A direct ensemble of CNN-BiGRU and IMU-Transformer without explicit topology expansion may suffice if the stacker handles heterogeneity, but parallel... |
+| **Gen 1** | `pipeline/models.py` | `seq_cls_multiscale_se_gru`, `seq_cls_1d_cnn_bigru`, `seq_cls_imu_branch_fusion` | `0.80205` | `+0.80205` | Replacing the linear ridge baseline with a multi-scale sequence ensemble (SE-ResNet/BiLSTM) will capture nonlinear interactions in ch50/ch9 sensor... |
 
 ---
 
@@ -75,8 +73,8 @@ flowchart LR
     PRE --> FEAT["2. Features: raw_passthrough"]
     FEAT --> OBJ["3. Objective: standard_task_loss"]
     OBJ --> M0["4. Ensemble: Oblivious GBDT (100%)"]
-    M0 --> POST["5. Post-Processing: multiclass_prior_tuner"]
-    POST --> OUT["5-Fold OOF & Holdout (HIERARCHICAL_F1 = 0.79910)"]
+    M0 --> POST["5. Post-Processing: identity_passthrough"]
+    POST --> OUT["5-Fold OOF & Holdout (HIERARCHICAL_F1 = 0.80205)"]
 ```
 
 | Deliverable | Role in Production Workflow |
