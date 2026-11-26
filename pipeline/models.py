@@ -2,7 +2,7 @@
 
 Synthesized by sovLoop (Model: qwen3.5:9b)
 Target: `target_binary` (binary_classification | HIERARCHICAL_F1)
-Active Model Operations: seq_cls_multiscale_se_gru
+Active Model Operations: seq_cls_multiscale_se_gru, seq_cls_1d_cnn_bigru, seq_cls_imu_branch_fusion
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ import pandas as pd
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-ACTIVE_MODEL_OPS: tuple[str, ...] = ('seq_cls_multiscale_se_gru',)
+ACTIVE_MODEL_OPS: tuple[str, ...] = ('seq_cls_multiscale_se_gru', 'seq_cls_1d_cnn_bigru', 'seq_cls_imu_branch_fusion')
 IS_BINARY_TASK: bool = "binary_classification" == "binary_classification"
 
 
